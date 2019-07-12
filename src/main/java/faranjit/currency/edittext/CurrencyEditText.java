@@ -5,11 +5,14 @@ import android.content.res.TypedArray;
 import android.os.Build;
 import android.text.Editable;
 import android.text.InputType;
+import android.text.TextUtils;
 import android.text.TextWatcher;
 import android.util.AttributeSet;
 import android.util.Log;
-import android.widget.EditText;
 
+import androidx.appcompat.widget.AppCompatEditText;
+
+import java.math.BigDecimal;
 import java.text.DecimalFormat;
 import java.text.DecimalFormatSymbols;
 import java.util.Currency;
@@ -18,7 +21,7 @@ import java.util.Locale;
 /**
  * Created by bulent.turkmen on 8/9/2016.
  */
-public class CurrencyEditText extends EditText {
+public class CurrencyEditText extends AppCompatEditText {
     private char mGroupDivider;
     private char mMonetaryDivider;
     private String mLocale = "";
@@ -321,6 +324,21 @@ public class CurrencyEditText extends EditText {
         if (showSymbol())
             return Double.parseDouble(text.replace(currencySymbol, "")) / Math.pow(10, fractionDigit);
         else return Double.parseDouble(text) / Math.pow(10, fractionDigit);
+    }
+
+    public BigDecimal getCurrencyBigDecimal() {
+        String text = getText().toString();
+        text = text.replace(groupDivider, '\u0020').replace(monetaryDivider, '\u0020')
+                .replace(".", "").replace(" ", "")
+                .replace(currencySymbol, "").trim();
+
+        if (showSymbol())
+            text.replace(currencySymbol, "");
+        if (TextUtils.isEmpty(text)) {
+            return null;
+        } else {
+            return new BigDecimal(text).divide(new BigDecimal(100));
+        }
     }
 
     /**
